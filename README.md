@@ -2,6 +2,7 @@
 <img src="logo.png" alt="drawing" width="200"/>
 
 Raylib compatible(ish) library for window's games!
+It supports a basic subset of 2D, and 3D!
 
 ## Reccomended NPPExec Script:
 ```
@@ -30,12 +31,15 @@ cmd /c IF EXIST $(NAME_PART).exe $(NAME_PART).exe
 `CheckCollisionRecs();`
 `IsKeyDown();`
 `IsKeyPressed();`
+`DrawLine3D();`
+`Vector3RotateByAxisAngle();`
 
 ## Types:
 `Color` (Unused)
 `Vector2`
 `Vector3`
 `Rectangle`
+`Camera`
 
 ## Colours:
 `RAYWHITE`
@@ -67,3 +71,4 @@ cmd /c IF EXIST $(NAME_PART).exe $(NAME_PART).exe
 * Be small in file size
 # Why?
 * I was taking a break from working on KatchFoundry, and wanted to make this.
+* I may likely continue this project in my free time.
