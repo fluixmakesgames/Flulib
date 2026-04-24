@@ -61,3 +61,9 @@ cmd /c IF EXIST $(NAME_PART).exe $(NAME_PART).exe
 `DARKBROWN`
 `BLACK`
 `MAGENTA`
+
+# Goals
+* Be compatible(ish) with Raylib
+* Be small in file size
+# Why?
+* I was taking a break from working on KatchFoundry, and wanted to make this.
