@@ -1,4 +1,8 @@
+// Flulib 1.0
+// Under ZLib License
+
 #include <stdbool.h>
+#include <math.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
