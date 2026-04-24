@@ -9,8 +9,9 @@
 
 #define DrawText FluDrawText
 #define Rectangle FluRectangle
+#define CloseWindow FluCloseWindow
 
-
+// Types
 typedef struct {
     unsigned char r;
     unsigned char g;
@@ -18,6 +19,7 @@ typedef struct {
     unsigned char a;
 }Color;
 
+// 2D
 typedef struct {
     float x;
     float y;
@@ -29,6 +31,26 @@ typedef struct {
     float width;
     float height;
 }FluRectangle;
+
+// 3D
+typedef struct {
+    float x;
+    float y;
+    float z;
+}Vector3;
+
+// Camera
+typedef struct {
+    Vector3 position;
+    Vector3 target;
+    Vector3 up;
+    float fovy;
+    int projection;
+}Camera;
+
+
+Camera currentCamera;
+#define CAMERA_PERSPECTIVE 0
 
 // Colours
 #define RAYWHITE   RGB(245, 245, 245)
@@ -59,6 +81,11 @@ typedef struct {
 HWND hwnd;
 HDC globalDC;
 bool close_bool = false;
+
+void FluCloseWindow() {
+    DestroyWindow(hwnd);
+}
+
 
 HDC memDC;
 HBITMAP memBitmap;
@@ -206,4 +233,93 @@ bool CheckCollisionRecs(Rectangle r1, Rectangle r2) {
             r1.x + r1.width > r2.x  &&
             r1.y < r2.y + r2.height &&
             r1.y + r1.height > r2.y);
+}
+
+// Camera Functions
+void BeginMode3D(Camera cam) {
+    currentCamera = cam;
+}
+
+void EndMode3D() {
+    return;
+}
+
+Vector3 ApplyCamera(Vector3 p, Camera cam) {
+    p.x -= cam.position.x;
+    p.y -= cam.position.y;
+    p.z -= cam.position.z;
+    return p;
+}
+
+Vector2 Project3D(Vector3 p, Camera cam) {
+    p = ApplyCamera(p, cam);
+
+    float z = p.z;
+    if (z <= 0.1f) z = 0.1f;
+
+    float fovRad = cam.fovy * (3.14159f / 180.0f);
+    float scale = 1.0f / tanf(fovRad / 2.0f);
+
+    Vector2 result;
+    result.x = (p.x * scale) / z * (clientRect.right / 2) + (clientRect.right / 2);
+    result.y = (p.y * scale) / z * (clientRect.bottom / 2) + (clientRect.bottom / 2);
+
+    return result;
+}
+
+void DrawLine3D(Vector3 a, Vector3 b, COLORREF color) {
+    Vector2 p1 = Project3D(a, currentCamera);
+    Vector2 p2 = Project3D(b, currentCamera);
+    
+    HPEN pen = CreatePen(PS_SOLID, 1, color);
+    HPEN oldPen = (HPEN)SelectObject(globalDC, pen);
+    
+    MoveToEx(globalDC, (int)p1.x, (int)p1.y, NULL);
+    LineTo(globalDC, (int)p2.x, (int)p2.y);
+    
+    SelectObject(globalDC, oldPen);
+    DeleteObject(pen);
+}
+
+Vector3 Vector3RotateX(Vector3 p, float angle) {
+    float s = sinf(angle);
+    float c = cosf(angle);
+
+    float y = p.y * c - p.z * s;
+    float z = p.y * s + p.z * c;
+
+    p.y = y;
+    p.z = z;
+    return p;
+}
+
+Vector3 Vector3RotateY(Vector3 p, float angle) {
+    float s = sinf(angle);
+    float c = cosf(angle);
+
+    float x = p.x * c + p.z * s;
+    float z = -p.x * s + p.z * c;
+
+    p.x = x;
+    p.z = z;
+    return p;
+}
+
+Vector3 Vector3RotateZ(Vector3 p, float angle) {
+    float s = sinf(angle);
+    float c = cosf(angle);
+
+    float x = p.x * c - p.y * s;
+    float y = p.x * s + p.y * c;
+
+    p.x = x;
+    p.y = y;
+    return p;
+}
+
+Vector3 Vector3RotateByAxisAngle(Vector3 v, Vector3 axis, float angle) {
+    if (axis.x == 1.0f) return Vector3RotateX(v, angle);
+    if (axis.y == 1.0f) return Vector3RotateY(v, angle);
+    if (axis.z == 1.0f) return Vector3RotateZ(v, angle);
+    return v;
 }
