@@ -1,5 +1,9 @@
-// Last Edited in Flulib 1.0
+// Created in Flulib 1.0
+// Last edited in Flulib 1.1
 
+#define FL_NO_3D
+#define FL_NO_2D
+#define FL_NO_TEXTURES
 #include "flulib.h"
 
 int main() {
@@ -12,6 +16,7 @@ int main() {
     
     while (!WindowShouldClose()) {
         ticks++;
+        
         if (ticks % 10 == 0 && seconds < lstrlenA(text)) {
             seconds++;
         }

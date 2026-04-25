@@ -1,6 +1,8 @@
-// Last Edited in Flulib 1.0
+// Last Edited in Flulib 1.1
 
 #include <math.h>
+#define FL_NO_2D
+#define FL_NO_TEXTURES
 #include "flulib.h"
 
 int main() {
@@ -60,9 +62,10 @@ int main() {
                     GREEN
                 );
             }
-
+            
             EndMode3D();
-
+            DrawFPS(20,20);
+            
         EndDrawing();
     }
 
