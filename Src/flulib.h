@@ -236,16 +236,18 @@ void DrawRectangle(float xf, float yf, int w, int h, COLORREF color) {
 void FluDrawText(const char* text, float xf, float yf, int fontSize, COLORREF color) {
     int x = (int)xf;
     int y = (int)yf;
+    
     SetTextColor(globalDC, color);
     SetBkMode(globalDC, TRANSPARENT);
     
     HFONT font = CreateFontA(fontSize, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 
                              DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, 
                              DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "MS Gothic");
-    
     HFONT oldFont = (HFONT)SelectObject(globalDC, font);
     
-    TextOutA(globalDC, x, y, text, lstrlenA(text));
+    RECT rect = { x, y, x + 800, y + 1000 }; 
+    
+    DrawTextA(globalDC, text, -1, &rect, DT_LEFT | DT_WORDBREAK | DT_NOCLIP);
     
     SelectObject(globalDC, oldFont);
     DeleteObject(font);
@@ -556,6 +558,7 @@ int IsFacingCamera(Vector3 a, Vector3 b, Vector3 c, Camera cam) {
 }
 
 // Tri's
+#ifndef FL_NO_TRI
 typedef struct {
     Vector3 a, b, c;
     COLORREF color;
@@ -647,6 +650,7 @@ void DrawCube(Vector3 center, float width, float height, float depth, COLORREF c
     DrawTriangle3D(v[4], v[5], v[1], color);
     DrawTriangle3D(v[4], v[1], v[0], color);
 }
+#endif
 
 // Camera Rotations
 Vector3 Vector3RotateX(Vector3 p, float angle) {
@@ -697,6 +701,8 @@ void BeginMode3D(Camera cam) {
 }
 
 void EndMode3D() {
-    FlushTriangles();
+    #ifndef FL_NO_TRI
+        FlushTriangles();
+    #endif
 }
 #endif
